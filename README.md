@@ -55,8 +55,8 @@ The PDF contains NDAA sections spanning **FY10–FY24** with implementation stat
 
 ## HTML Downloads
 
-**Script:** `download_htmls.py`
-**Output:** `ndaa_cases/html_from_tracker/`
+**Script:** `download_fr_htmls.py`
+**Output:** `fr_cases/html_from_tracker/`
 
 | Metric | Value |
 |---|---|

@@ -5,7 +5,7 @@ that have a FRN Citation in the Final Rule column, along with Case Numbers.
 import pdfplumber
 import csv
 
-PDF_PATH = "./data/DFARS_NDAA_Implementation_Tracker.pdf"
+PDF_PATH = "./DFARS_NDAA_Implementation_Tracker.pdf"
 OUTPUT_CSV = "./data/ndaa_final_rule_citations.csv"
 
 
