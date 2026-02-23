@@ -98,6 +98,15 @@ def _collect_amended_section_instructions(
     return result
 
 
+def _is_in_200_range(section_num: str) -> bool:
+    """Return True if the DFARS section's part number is in 200–299."""
+    try:
+        part = int(section_num.split(".")[0])
+        return 200 <= part <= 299
+    except (ValueError, IndexError):
+        return False
+
+
 def extract_dfars_sections(html_path: Path) -> list[dict]:
     """
     Parse a single HTML file and return a list of dicts, one per affected
@@ -122,6 +131,8 @@ def extract_dfars_sections(html_path: Path) -> list[dict]:
         sec_id = sectno_div.get("id", "")
         section_num = sec_id.replace("sectno-reference-", "").strip()
         if not section_num or section_num in seen_sections:
+            continue
+        if not _is_in_200_range(section_num):
             continue
         seen_sections.add(section_num)
 
@@ -150,7 +161,7 @@ def extract_dfars_sections(html_path: Path) -> list[dict]:
                 r"[Ss]ection\s+(\d{3}\.\d[\w\-\.]*)", text
             )
             for m in matches:
-                if m not in seen_sections:
+                if m not in seen_sections and _is_in_200_range(m):
                     seen_sections.add(m)
                     results.append({
                         "affected_dfars_section": m,
@@ -244,8 +255,24 @@ def main():
 
     # Add the new column to the dataframe
     df["affected_dfars_sections"] = affected_sections_col
-    df.to_csv(output_path, index=False)
-    print(f"\n✅ Wrote {output_path} with 'affected_dfars_sections' column.")
+
+    # Filter: only rows with a valid URL and at least one affected DFARS section
+    df_filtered = df[
+        df["fr_body_html_url"].str.strip().astype(bool)
+        & df["affected_dfars_sections"].str.strip().astype(bool)
+    ].copy()
+    df_filtered.to_csv(output_path, index=False)
+    print(f"\n✅ Wrote {len(df_filtered)} rows to {output_path} (filtered from {len(df)})")
+
+    # Also filter the details to only include rows for documents in the filtered set
+    filtered_doc_ids = set()
+    for _, r in df_filtered.iterrows():
+        urls = [u.strip() for u in str(r.get("fr_body_html_url", "")).split("\n") if u.strip()]
+        for u in urls:
+            did = _extract_doc_id_from_url(u)
+            if did:
+                filtered_doc_ids.add(did)
+    all_details = [d for d in all_details if d["document_id"] in filtered_doc_ids]
 
     # Write detail CSV
     with open(detail_path, "w", newline="", encoding="utf-8") as f:
