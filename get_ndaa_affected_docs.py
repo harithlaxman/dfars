@@ -2,7 +2,7 @@
 Identify which documents each NDAA section modifies.
 
 Reads doc_to_ndaa.csv, fetches the NDAA text for each unique citation
-using data/ndaa/utils, sends it to OpenAI to extract the documents
+using ndaa/utils, sends it to OpenAI to extract the documents
 being amended/modified, and writes the results to data/ndaa_affected_docs.csv.
 """
 
@@ -13,7 +13,7 @@ import pandas as pd
 from pydantic import BaseModel
 from tqdm import tqdm
 
-import data.ndaa.utils as ndaa_utils
+import ndaa.utils as ndaa_utils
 from openai_utils import connect_to_openai, get_structured_response
 
 

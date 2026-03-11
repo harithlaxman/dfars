@@ -4,7 +4,7 @@ from tqdm import tqdm
 import pandas as pd
 from pathlib import Path
 
-import data.ndaa.utils as ndaa_utils
+import ndaa.utils as ndaa_utils
 
 DOC_TO_NDAA_CSV = Path("./data/doc_to_ndaa.csv")
 
