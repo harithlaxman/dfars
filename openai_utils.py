@@ -42,18 +42,19 @@ def get_response(client, system_prompt: str, content: str):
     return response.output_text
 
 def get_structured_response(client, system_prompt: str, content: str, output_format: BaseModel):
+    input = []
+    if system_prompt != "":
+        input.append({
+            "role": "system",
+            "content": system_prompt
+        })
+    input.append({
+        "role": "user",
+        "content": content
+    })
     response = client.responses.parse(
         model=OPENAI_MODEL,
-        input = [
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": content
-            }
-        ],
+        input = input,
         text_format=output_format
     )
     return response.output_parsed

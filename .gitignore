@@ -1,1 +1,8 @@
 data/
+__pycache__/
+*.pyc
+.env
+ndaa/jsons/
+ndaa/xmls/
+.langgraph_api/
+*.png
